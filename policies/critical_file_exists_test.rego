@@ -16,7 +16,9 @@ import data.compliance_framework.critical_file_exists as policy
     "attestation": null,
     "authorized_signers": ["tech-lead@company.com"],
   }
-  count(policy.violation) == 1 with input as inp
+  violations := policy.violation with input as inp
+  count(violations) == 1
+  violations[{"id": "critical_file_missing", "remarks": "File is expected but does not exist in the provided path"}]
 }
 
 # Test: File exists, existence policy passes (no violation here)

@@ -20,7 +20,7 @@ import data.compliance_framework.critical_file_attestation_signer as policy
   violations := policy.violation with input as inp
   count(violations) == 1
   # Check the actual remarks value using set indexing
-  violations[{"remarks": "Tracked file does not exist."}]
+  violations[{"id": "attestation_signer_missing_tracked_file", "remarks": "Tracked file does not exist."}]
 } 
 
 # Test: Should not fail if attestation path is not set
@@ -65,7 +65,7 @@ test_pass_if_no_attestation_path if {
   }
   violation := policy.violation with input as inp
   count(violation) == 1
-  violation[{"remarks": "Attestation for tracked file does not exist."}]
+  violation[{"id": "attestation_missing", "remarks": "Attestation for tracked file does not exist."}]
 }
 
 # Test: Attestation exists but not verified
@@ -84,7 +84,7 @@ test_pass_if_no_attestation_path if {
   
   violation := policy.violation with input as inp
   count(violation) == 1
-  violation[{"remarks": "File has an attestation with an invalid or unverified signature."}]
+  violation[{"id": "attestation_signature_unverified", "remarks": "File has an attestation with an invalid or unverified signature."}]
 }
 
 # Test: Attestation verified but signer not authorized
@@ -103,7 +103,7 @@ test_pass_if_no_attestation_path if {
   violations := policy.violation with input as inp
 
   count(violations) == 1
-  violations[{"remarks": "File has a verified attestation signed by an unauthorized signer (random@attacker.com)."}]
+  violations[{"id": "attestation_unauthorized_signer", "remarks": "File has a verified attestation signed by an unauthorized signer (random@attacker.com)."}]
 
 }
 
@@ -121,4 +121,11 @@ test_pass_if_no_attestation_path if {
     "authorized_signers": ["tech-lead@company.com", "cto@company.com"],
   }
   count(policy.violation) == 0 with input as inp
+}
+
+test_risk_templates_map_all_violation_ids if {
+  templates := policy.risk_templates
+  count(templates) == 2
+  templates[_].violation_ids[_] == "attestation_signature_unverified"
+  templates[_].violation_ids[_] == "attestation_unauthorized_signer"
 }
