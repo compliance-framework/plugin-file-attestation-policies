@@ -5,6 +5,33 @@ package compliance_framework.critical_file_attestation_digest
 
 default has_tracked_file := false
 
+risk_templates := [{
+  "name": "Critical artifact attestation digest mismatch",
+  "title": "Artifact Attestation Digest Mismatch",
+  "statement": "The attestation for the tracked critical artifact records a digest that does not match the artifact's current digest in the repository. This weakens integrity and provenance assurances because the attestation may describe different content than what is actually present, preventing reliable trust in the artifact and its supply-chain evidence.",
+  "likelihood_hint": "medium",
+  "impact_hint": "high",
+  "violation_ids": ["attestation_digest_mismatch"],
+  "threat_refs": [
+    {
+      "system": "https://cwe.mitre.org",
+      "external_id": "CWE-354",
+      "title": "Improper Validation of Integrity Check Value",
+      "url": "https://cwe.mitre.org/data/definitions/354.html"
+    }
+  ],
+  "remediation": {
+    "title": "Reconcile attestation digest with repository content",
+    "description": "Ensure the attestation and repository artifact refer to the same content version and that digest verification is performed against the correct algorithm and artifact instance.",
+    "tasks": [
+      { "title": "Confirm the tracked artifact path and expected digest algorithm" },
+      { "title": "Verify the repository artifact and the attested subject refer to the same content version" },
+      { "title": "Regenerate or restore the attestation from the approved build or signing workflow if the artifact changed intentionally" },
+      { "title": "Investigate unexpected digest changes for tampering, drift, or release-process errors" },
+    ]
+  }
+}]
+
 has_tracked_file if {
   input.path != ""
 }
@@ -41,17 +68,17 @@ digest_mismatch[msg] if {
   )
 }
 
-violation[{"remarks": "Tracked file does not exist."}] if {
+violation[{"id": "attestation_digest_missing_tracked_file", "remarks": "Tracked file does not exist."}] if {
   has_tracked_file
   not input.exists
 }
 
-violation[{"remarks": "Attestation file does not exist."}] if {
+violation[{"id": "attestation_digest_missing", "remarks": "Attestation file does not exist."}] if {
   input.attestation.path != ""
   not input.attestation.exists
 }
 
-violation[{"remarks": msg}] if {
+violation[{"id": "attestation_digest_mismatch", "remarks": msg}] if {
   digest_mismatch[msg]
 }
 
