@@ -3,3 +3,6 @@ lisa-design:
 - Do NOT rewrite `digest_mismatch[msg]` / `attestation_failure[entry]` as `some x in p` (Regal use-some-for-output-vars / prefer-some-in-iteration): these v0-style `p[x] if` heads are partial OBJECTS under OPA 1.x ({x: true}), so `some x in p` binds the value `true` and changes the violation remarks. Tried and reverted; left as Regal warnings.
 - Left as warnings (behaviour-changing or test-assertion rewrites): equals-over-count in signer.rego (`count(input.authorized_signers) > 0` vs `!= []` differ for null/missing), equals-over-count and use-in-operator in *_test.rego (tests kept unchanged).
 - Converting `violation[...] if` to `violation contains ... if` changes the raw OPA output shape (object -> set); the API's policyeval accepts both, but it is out of scope here and is listed as an open question.
+
+lisa-selfreview:
+Pass 1 (strict): verdict approve, no in-diff findings. Pre-existing (not introduced here, out of scope): REGO-META-001 no METADATA blocks; REGO-INPUT-001 bare input.attestation.* access; REGO-README-001 README does not list the three policies; Makefile `validate` runs `opa check` without --strict.
