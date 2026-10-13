@@ -1,0 +1,6 @@
+lisa-design:
+- Manifest seeded at 0.2.0 = releases/latest (v0.2.0, final, commit 69266f1 is an ancestor of main); no bootstrap-sha needed.
+- Callers copied verbatim from mock-plugin-policies-1 with pins moved to workflows v1.5.2 (6e7fc9c); release.yml keeps opa-version "1.14.1" and directory: policies so the bundle root is unchanged (digest = evidence provenance).
+- No version.txt added by hand: release-type simple adds it in the first release PR.
+- README untouched: it documents make build / opa test, not the release process.
+- ci.yml: only the three pins moved v1.5.1 -> v1.5.2; release-checks job already present.
