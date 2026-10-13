@@ -1,0 +1,5 @@
+lisa-design:
+- Policy behaviour is frozen for W2-S4-T02: only opa fmt, a rule reorder (Regal messy-rule) and test renames (Regal identically-named-tests). Verified by AST comparison against main (identical apart from rule order and the 4 renamed tests) and by evaluating title/description/violation/risk_templates for 12 inputs (identical output).
+- Do NOT rewrite `digest_mismatch[msg]` / `attestation_failure[entry]` as `some x in p` (Regal use-some-for-output-vars / prefer-some-in-iteration): these v0-style `p[x] if` heads are partial OBJECTS under OPA 1.x ({x: true}), so `some x in p` binds the value `true` and changes the violation remarks. Tried and reverted; left as Regal warnings.
+- Left as warnings (behaviour-changing or test-assertion rewrites): equals-over-count in signer.rego (`count(input.authorized_signers) > 0` vs `!= []` differ for null/missing), equals-over-count and use-in-operator in *_test.rego (tests kept unchanged).
+- Converting `violation[...] if` to `violation contains ... if` changes the raw OPA output shape (object -> set); the API's policyeval accepts both, but it is out of scope here and is listed as an open question.
